@@ -281,6 +281,7 @@ Called by ClientBeginServerFrame and ClientThink
 */
 void Think_Weapon (edict_t *ent)
 {
+
 	// if just died, put the weapon away
 	if (ent->health < 1)
 	{
@@ -298,6 +299,7 @@ void Think_Weapon (edict_t *ent)
 			is_silenced = 0;
 		ent->client->pers.weapon->weaponthink (ent);
 	}
+	
 }
 
 
@@ -794,6 +796,7 @@ void Weapon_RocketLauncher_Fire (edict_t *ent)
 
 	if (! ( (int)dmflags->value & DF_INFINITE_AMMO ) )
 		ent->client->pers.inventory[ent->client->ammo_index]--;
+
 }
 
 void Weapon_RocketLauncher (edict_t *ent)
@@ -829,7 +832,9 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 	VectorScale (forward, -2, ent->client->kick_origin);
 	ent->client->kick_angles[0] = -1;
 
-	fire_blaster (ent, start, forward, damage, 1000, effect, hyper);
+	//fire_blaster (ent, start, forward, damage, 1000, effect, hyper);
+
+	fire_rocket(ent, start, forward, damage, 70, 5, 5);
 
 	// send muzzle flash
 	gi.WriteByte (svc_muzzleflash);
@@ -842,7 +847,6 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 
 	PlayerNoise(ent, start, PNOISE_WEAPON);
 }
-
 
 void Weapon_Blaster_Fire (edict_t *ent)
 {
