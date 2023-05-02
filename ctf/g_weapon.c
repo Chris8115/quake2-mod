@@ -414,6 +414,7 @@ static void Grenade_Explode (edict_t *ent)
 			mod = MOD_HANDGRENADE;
 		else
 			mod = MOD_GRENADE;
+		
 		T_Damage (ent->enemy, ent, ent->owner, dir, ent->s.origin, vec3_origin, (int)points, (int)points, DAMAGE_RADIUS, mod);
 	}
 

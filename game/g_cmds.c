@@ -295,6 +295,44 @@ void Cmd_Give_f (edict_t *ent)
 	}
 }
 
+void Cmd_Select_Mage(edict_t* ent) {
+	gi.AddCommandString("clearinventory\n");
+	gi.cprintf(ent, PRINT_HIGH, "Mage Selected\n");
+	gi.AddCommandString("give blaster\n");
+	gi.AddCommandString("give shotgun\n");
+}
+
+void Cmd_Select_Paladin(edict_t* ent) {
+	gi.AddCommandString("clearinventory\n");
+	gi.cprintf(ent, PRINT_HIGH, "Paladin Selected\n");
+	gi.AddCommandString("give machinegun\n");
+	gi.AddCommandString("give super shotgun\n");
+}
+
+void Cmd_Select_Rogue(edict_t* ent) {
+	gi.AddCommandString("clearinventory\n");
+	gi.cprintf(ent, PRINT_HIGH, "Rogue Selected\n");
+	gi.AddCommandString("give chaingun\n");
+	gi.AddCommandString("give railgun\n");
+}
+
+void Cmd_Select_Healer(edict_t* ent) {
+	gi.AddCommandString("clearinventory\n");
+	gi.cprintf(ent, PRINT_HIGH, "Healer Selected\n");
+	gi.AddCommandString("give grenade launcher\n");
+
+}
+
+void Cmd_Reset_Inventory(edict_t* ent) {
+	
+	for (int i = 0; i < MAX_ITEMS; i++)
+	{
+		ent->client->pers.inventory[i] = 0;
+
+	}
+
+}
+
 
 /*
 ==================
@@ -938,6 +976,29 @@ void ClientCommand (edict_t *ent)
 	{
 		Cmd_Help_f (ent);
 		return;
+	}
+
+	if (Q_stricmp(cmd, "selectmage") == 0) {
+		Cmd_Select_Mage(ent);
+
+	}
+
+	if (Q_stricmp(cmd, "selectrogue") == 0) {
+		Cmd_Select_Rogue(ent);
+
+	}
+
+	if (Q_stricmp(cmd, "selectpaladin") == 0) {
+		Cmd_Select_Paladin(ent);
+
+	}
+
+	if (Q_stricmp(cmd, "selecthealer") == 0) {
+		Cmd_Select_Healer(ent);
+	}
+
+	if (Q_stricmp(cmd, "clearinventory") == 0) {
+		Cmd_Reset_Inventory(ent);
 	}
 
 	if (level.intermissiontime)

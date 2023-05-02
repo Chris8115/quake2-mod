@@ -17,6 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+
+
 #include "g_local.h"
 #include "m_player.h"
 
@@ -1347,6 +1349,8 @@ void ClientBegin (edict_t *ent)
 
 	// make sure all view stuff is valid
 	ClientEndServerFrame (ent);
+
+	//gi.WriteString("bind n select_mage\n");
 }
 
 /*
@@ -1577,6 +1581,7 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 	level.current_entity = ent;
 	client = ent->client;
 
+
 	if (level.intermissiontime)
 	{
 		client->ps.pmove.pm_type = PM_FREEZE;
@@ -1741,6 +1746,22 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 		if (other->inuse && other->client->chase_target == ent)
 			UpdateChaseCam(other);
 	}
+
+
+	
+	/*
+	// Check if the 'n' key was pressed
+	if (ucmd->buttons & Q_stricmp(ent->client->pers.cmd, "n") == 0)
+	{
+		// Spawn the railgun if it hasn't been spawned already
+		if (!ent->client->pers.inventory[ITEM_INDEX(FindItem("Railgun"))])
+		{
+			ent->client->pers.inventory[ITEM_INDEX(FindItem("Railgun"))] = 1;
+			ent->client->pers.selected_item = ITEM_INDEX(FindItem("Railgun"));
+			gi.cprintf(ent, PRINT_HIGH, "Railgun spawned.\n");
+		}
+	}
+	*/
 }
 
 

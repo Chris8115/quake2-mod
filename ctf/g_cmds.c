@@ -20,7 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "g_local.h"
 #include "m_player.h"
 
-
 char *ClientTeam (edict_t *ent)
 {
 	char		*p;
@@ -986,6 +985,13 @@ void ClientCommand (edict_t *ent)
 		return;
 	}
 
+	if (Q_stricmp(cmd, "selectmage") == 0) {
+		gi.cprintf(ent, PRINT_HIGH, "Mage Selected\n");
+		gi.WriteString("give shotgun\n");
+
+
+	}
+
 	if (level.intermissiontime)
 		return;
 
@@ -996,7 +1002,10 @@ void ClientCommand (edict_t *ent)
 	else if (Q_stricmp (cmd, "give") == 0)
 		Cmd_Give_f (ent);
 	else if (Q_stricmp (cmd, "god") == 0)
-		Cmd_God_f (ent);
+	{
+		gi.cprintf(ent, PRINT_HIGH, "GOING GOD\n");
+		Cmd_God_f(ent);
+	}
 	else if (Q_stricmp (cmd, "notarget") == 0)
 		Cmd_Notarget_f (ent);
 	else if (Q_stricmp (cmd, "noclip") == 0)
@@ -1063,4 +1072,5 @@ void ClientCommand (edict_t *ent)
 //ZOID
 	else	// anything that doesn't match a command will be a chat
 		Cmd_Say_f (ent, false, true);
+
 }

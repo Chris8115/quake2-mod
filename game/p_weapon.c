@@ -114,7 +114,6 @@ void PlayerNoise(edict_t *who, vec3_t where, int type)
 	gi.linkentity (noise);
 }
 
-
 qboolean Pickup_Weapon (edict_t *ent, edict_t *other)
 {
 	int			index;
@@ -834,7 +833,7 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 
 	//fire_blaster (ent, start, forward, damage, 1000, effect, hyper);
 
-	fire_rocket(ent, start, forward, damage, 70, 5, 5);
+	fire_rocket(ent, start, forward, damage, 350, 5, 5);
 
 	// send muzzle flash
 	gi.WriteByte (svc_muzzleflash);
@@ -1038,6 +1037,8 @@ void Machinegun_Fire (edict_t *ent)
 		ent->s.frame = FRAME_attack1 - (int) (random()+0.25);
 		ent->client->anim_end = FRAME_attack8;
 	}
+
+	ent->client->pers.inventory[ITEM_INDEX(FindItem("Body Armor"))] += 5;
 }
 
 void Weapon_Machinegun (edict_t *ent)
@@ -1047,6 +1048,8 @@ void Weapon_Machinegun (edict_t *ent)
 
 	Weapon_Generic (ent, 3, 5, 45, 49, pause_frames, fire_frames, Machinegun_Fire);
 }
+
+
 
 void Chaingun_Fire (edict_t *ent)
 {
@@ -1058,6 +1061,7 @@ void Chaingun_Fire (edict_t *ent)
 	vec3_t		offset;
 	int			damage;
 	int			kick = 2;
+
 
 	if (deathmatch->value)
 		damage = 6;
@@ -1124,6 +1128,9 @@ void Chaingun_Fire (edict_t *ent)
 	{
 		if (level.time >= ent->pain_debounce_time)
 		{
+			gi.WriteByte(svc_stufftext);
+			gi.WriteString("cl_forwardspeed 200");
+
 			gi.sound(ent, CHAN_VOICE, gi.soundindex("weapons/noammo.wav"), 1, ATTN_NORM, 0);
 			ent->pain_debounce_time = level.time + 1;
 		}
@@ -1153,6 +1160,10 @@ void Chaingun_Fire (edict_t *ent)
 		P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
 
 		fire_bullet (ent, start, forward, damage, kick, DEFAULT_BULLET_HSPREAD, DEFAULT_BULLET_VSPREAD, MOD_CHAINGUN);
+
+		gi.WriteByte(svc_stufftext);
+		gi.WriteString("cl_forwardspeed 600");
+		//gi.cvar_set("cl_forwardspeed", 500);
 	}
 
 	// send muzzle flash
@@ -1185,6 +1196,8 @@ SHOTGUN / SUPERSHOTGUN
 ======================================================================
 */
 
+int shotgunUse = 1;
+
 void weapon_shotgun_fire (edict_t *ent)
 {
 	vec3_t		start;
@@ -1203,8 +1216,8 @@ void weapon_shotgun_fire (edict_t *ent)
 
 	VectorScale (forward, -2, ent->client->kick_origin);
 	ent->client->kick_angles[0] = -2;
-
-	VectorSet(offset, 0, 8,  ent->viewheight-8);
+	//8
+	VectorSet(offset, 0, 0,  ent->viewheight-8);
 	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
 
 	if (is_quad)
@@ -1213,10 +1226,18 @@ void weapon_shotgun_fire (edict_t *ent)
 		kick *= 4;
 	}
 
+	int hspread = 50 * shotgunUse;
+	int vspread = 50 * shotgunUse;
+
 	if (deathmatch->value)
 		fire_shotgun (ent, start, forward, damage, kick, 500, 500, DEFAULT_DEATHMATCH_SHOTGUN_COUNT, MOD_SHOTGUN);
 	else
-		fire_shotgun (ent, start, forward, damage, kick, 500, 500, DEFAULT_SHOTGUN_COUNT, MOD_SHOTGUN);
+		fire_shotgun (ent, start, forward, damage, kick, hspread, vspread, 75, MOD_SHOTGUN);
+
+	char myStr[16];
+	sprintf(myStr, "%d", shotgunUse);
+	gi.cprintf(NULL, PRINT_HIGH, "Scatter Spell Charges: %s\n", myStr);
+	shotgunUse++;
 
 	// send muzzle flash
 	gi.WriteByte (svc_muzzleflash);
@@ -1249,11 +1270,13 @@ void weapon_supershotgun_fire (edict_t *ent)
 	int			damage = 6;
 	int			kick = 12;
 
-	AngleVectors (ent->client->v_angle, forward, right, NULL);
+	gi.WriteByte(svc_stufftext);
+	gi.WriteString("give power shield\n");
 
+	AngleVectors (ent->client->v_angle, forward, right, NULL);
+	
 	VectorScale (forward, -2, ent->client->kick_origin);
 	ent->client->kick_angles[0] = -2;
-
 	VectorSet(offset, 0, 8,  ent->viewheight-8);
 	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
 
@@ -1283,6 +1306,16 @@ void weapon_supershotgun_fire (edict_t *ent)
 
 	if (! ( (int)dmflags->value & DF_INFINITE_AMMO ) )
 		ent->client->pers.inventory[ent->client->ammo_index] -= 2;
+
+	//ent->client->pers.inventory[ITEM_INDEX(FindItem("Body Armor"))] += 10;
+	
+	//edict_t* player = &g_edicts[1];
+
+	// Give the player a Power Shield
+	//gi.cvar("give power shield", "1", true);
+
+
+
 }
 
 void Weapon_SuperShotgun (edict_t *ent)
@@ -1310,6 +1343,16 @@ void weapon_railgun_fire (edict_t *ent)
 	vec3_t		offset;
 	int			damage;
 	int			kick;
+	
+	//Teleport player forward
+	AngleVectors(ent->client->ps.viewangles, forward, NULL, NULL);
+	VectorScale(forward, -200, forward); // Adjust the second parameter to determine the distance to teleport
+	VectorAdd(ent->s.origin, forward, ent->s.origin);
+	vec3_t newOrigin;
+	VectorAdd(ent->s.origin, forward, newOrigin);
+	VectorCopy(newOrigin, ent->client->ps.pmove.origin);
+	ent->client->ps.rdflags |= EF_TELEPORTER;
+
 
 	if (deathmatch->value)
 	{	// normal damage is too extreme in dm

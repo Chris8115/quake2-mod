@@ -223,6 +223,7 @@ static void fire_lead (edict_t *self, vec3_t start, vec3_t aimdir, int damage, i
 			if (tr.ent->takedamage)
 			{
 				T_Damage (tr.ent, self, self, aimdir, tr.endpos, tr.plane.normal, damage, kick, DAMAGE_BULLET, mod);
+				
 			}
 			else
 			{
@@ -420,6 +421,7 @@ static void Grenade_Explode (edict_t *ent)
 		else
 			mod = MOD_GRENADE;
 		T_Damage (ent->enemy, ent, ent->owner, dir, ent->s.origin, vec3_origin, (int)points, (int)points, DAMAGE_RADIUS, mod);
+		ent->owner->health += 25;
 	}
 
 	if (ent->spawnflags & 2)
@@ -455,7 +457,9 @@ static void Grenade_Explode (edict_t *ent)
 static void Grenade_Touch (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf)
 {
 	if (other == ent->owner)
+	{
 		return;
+	}
 
 	if (surf && (surf->flags & SURF_SKY))
 	{
@@ -498,7 +502,7 @@ void fire_grenade (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int s
 	VectorMA (grenade->velocity, 200 + crandom() * 10.0, up, grenade->velocity);
 	VectorMA (grenade->velocity, crandom() * 10.0, right, grenade->velocity);
 	VectorSet (grenade->avelocity, 300, 300, 300);
-	grenade->movetype = MOVETYPE_BOUNCE;
+	grenade->movetype = MOVETYPE_TOSS;
 	grenade->clipmask = MASK_SHOT;
 	grenade->solid = SOLID_BBOX;
 	grenade->s.effects |= EF_GRENADE;
@@ -512,7 +516,7 @@ void fire_grenade (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int s
 	grenade->dmg = damage;
 	grenade->dmg_radius = damage_radius;
 	grenade->classname = "grenade";
-
+	
 	gi.linkentity (grenade);
 }
 
@@ -524,14 +528,14 @@ void fire_grenade2 (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int 
 
 	vectoangles (aimdir, dir);
 	AngleVectors (dir, forward, right, up);
-
+	//magic
 	grenade = G_Spawn();
 	VectorCopy (start, grenade->s.origin);
 	VectorScale (aimdir, speed, grenade->velocity);
 	VectorMA (grenade->velocity, 200 + crandom() * 10.0, up, grenade->velocity);
 	VectorMA (grenade->velocity, crandom() * 10.0, right, grenade->velocity);
 	VectorSet (grenade->avelocity, 300, 300, 300);
-	grenade->movetype = MOVETYPE_BOUNCE;
+	grenade->movetype = MOVETYPE_TOSS;
 	grenade->clipmask = MASK_SHOT;
 	grenade->solid = SOLID_BBOX;
 	grenade->s.effects |= EF_GRENADE;
@@ -675,6 +679,8 @@ void fire_rail (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick
 	edict_t		*ignore;
 	int			mask;
 	qboolean	water;
+
+
 
 	VectorMA (start, 8192, aimdir, end);
 	VectorCopy (start, from);
