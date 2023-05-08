@@ -1004,6 +1004,7 @@ void ClientCommand (edict_t *ent)
 	}
 
 	if (Q_stricmp(cmd, "selectmage") == 0) {
+
 		Cmd_Select_Mage(ent);
 
 	}
@@ -1070,9 +1071,9 @@ void ClientCommand (edict_t *ent)
 		ent->damageBoost += 5;
 
 		char dmgBoostString[50];
-		char maxDmgBoostStr[50] = "Max Boost: ";
+		char maxDmgBoostStr[50] = "DMG Boost: ";
 		char result3[100];
-		itoa(ent->jumpBoost, dmgBoostString, 10);
+		itoa(ent->damageBoost, dmgBoostString, 10);
 
 		strcpy(result3, maxDmgBoostStr);  // Copy str1 into result
 		strcat(result3, " ");   // Add a space to result
