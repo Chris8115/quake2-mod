@@ -1991,7 +1991,7 @@ void Game_MenuInit( void )
 	s_credits_action.generic.flags  = QMF_LEFT_JUSTIFY;
 	s_credits_action.generic.x		= 0;
 	s_credits_action.generic.y		= 60;
-	s_credits_action.generic.name	= "credits";
+	s_credits_action.generic.name	= "Help";
 	s_credits_action.generic.callback = CreditsFunc;
 
 	Menu_AddItem( &s_game_menu, ( void * ) &s_easy_game_action );

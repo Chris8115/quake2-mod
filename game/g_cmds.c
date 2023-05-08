@@ -295,8 +295,16 @@ void Cmd_Give_f (edict_t *ent)
 	}
 }
 
+void Cmd_Mod_Help(edict_t* ent) {
+	gi.cprintf(ent, PRINT_HIGH, "MOD HELP SCREEN\n");
+	gi.cprintf(ent, PRINT_HIGH, "There are 5 playable classes; Mage, Paladin, Rogue, Healer, Heavy Gunner\n");
+	gi.cprintf(ent, PRINT_HIGH, "Class Keybinds are as follows: N;Mage M;Rogue ,;Paladin, .;Healer, /;Heavy Gunner\n");
+	gi.cprintf(ent, PRINT_HIGH, "Each class gets two unique weapons with custom abilities to each\n");
+	gi.cprintf(ent, PRINT_HIGH, "The mage is attack focused, the paladin is defence focused, the rogue is mobility focused, the healer is heal and regen focused, and the heavy gunner is damage focused\n");
+}
+
 void Cmd_Select_Mage(edict_t* ent) {
-	gi.AddCommandString("clearinventory\n");
+	//gi.AddCommandString("clearinventory\n");
 	gi.cprintf(ent, PRINT_HIGH, "Mage Selected\n");
 	gi.AddCommandString("give blaster\n");
 	gi.AddCommandString("give shotgun\n");
@@ -320,7 +328,23 @@ void Cmd_Select_Healer(edict_t* ent) {
 	gi.AddCommandString("clearinventory\n");
 	gi.cprintf(ent, PRINT_HIGH, "Healer Selected\n");
 	gi.AddCommandString("give grenade launcher\n");
+	gi.AddCommandString("give hyperblaster\n");
 
+}
+
+void Cmd_Select_Gunner(edict_t* ent) {
+	gi.AddCommandString("clearinventory\n");
+	gi.cprintf(ent, PRINT_HIGH, "Gunner Selected\n");
+	gi.AddCommandString("give rocket launcher\n");
+	gi.AddCommandString("give bfg10k\n");
+}
+
+void Cmd_Spawn_Test(edict_t* ent) {
+
+	int ammoIndex = ent->client->pers.weapon;
+	int amount = 10; // Change this to the amount of ammo you want to add
+	Add_Ammo(ent, ammoIndex, amount);
+	
 }
 
 void Cmd_Reset_Inventory(edict_t* ent) {
@@ -972,9 +996,10 @@ void ClientCommand (edict_t *ent)
 		Cmd_Score_f (ent);
 		return;
 	}
-	if (Q_stricmp (cmd, "help") == 0)
+	if (Q_stricmp (cmd, "modhelp") == 0)
 	{
-		Cmd_Help_f (ent);
+		//Cmd_Help_f (ent);
+		Cmd_Mod_Help(ent);
 		return;
 	}
 
@@ -995,6 +1020,65 @@ void ClientCommand (edict_t *ent)
 
 	if (Q_stricmp(cmd, "selecthealer") == 0) {
 		Cmd_Select_Healer(ent);
+	}
+
+	if (Q_stricmp(cmd, "selectgunner") == 0) {
+		Cmd_Select_Gunner(ent);
+	}
+
+	if (Q_stricmp(cmd, "spawntest") == 0) {
+		Cmd_Spawn_Test(ent);
+	}
+	
+	if (Q_stricmp(cmd, "upgrademaxhp") == 0) {
+		ent->health -= 25;
+		ent->max_health += 50;
+		char hpString[50];
+		char maxHPStr[50] = "Max HP: ";
+		char result[100];
+		itoa(ent->max_health, hpString, 10);
+
+		strcpy(result, maxHPStr);  // Copy str1 into result
+		strcat(result, " ");   // Add a space to result
+		strcat(result, hpString);  // Concatenate str2 to result
+
+		gi.cprintf(ent, PRINT_HIGH, result);
+
+
+		//gi.cprintf(ent, PRINT_HIGH, "Max HP: ");
+	}
+
+	if (Q_stricmp(cmd, "upgradeboostheight") == 0) {
+		ent->health -= 25;
+		ent->jumpBoost += 75;
+
+		char boostString[50];
+		char maxBoostStr[50] = "Max Boost: ";
+		char result2[100];
+		itoa(ent->jumpBoost, boostString, 10);
+
+		strcpy(result2, maxBoostStr);  // Copy str1 into result
+		strcat(result2, " ");   // Add a space to result
+		strcat(result2, boostString);  // Concatenate str2 to result
+
+		gi.cprintf(ent, PRINT_HIGH, result2);
+	}
+
+
+	if (Q_stricmp(cmd, "upgradedamage") == 0) {
+		ent->health -= 25;
+		ent->damageBoost += 5;
+
+		char dmgBoostString[50];
+		char maxDmgBoostStr[50] = "Max Boost: ";
+		char result3[100];
+		itoa(ent->jumpBoost, dmgBoostString, 10);
+
+		strcpy(result3, maxDmgBoostStr);  // Copy str1 into result
+		strcat(result3, " ");   // Add a space to result
+		strcat(result3, dmgBoostString);  // Concatenate str2 to result
+
+		gi.cprintf(ent, PRINT_HIGH, result3);
 	}
 
 	if (Q_stricmp(cmd, "clearinventory") == 0) {

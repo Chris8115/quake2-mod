@@ -759,6 +759,8 @@ ROCKET
 
 void Weapon_RocketLauncher_Fire (edict_t *ent)
 {
+	ent->velocity[2] += 550 + ent->jumpBoost;
+
 	vec3_t	offset, start;
 	vec3_t	forward, right;
 	int		damage;
@@ -821,6 +823,10 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 	vec3_t	start;
 	vec3_t	offset;
 
+	if (hyper) {
+		ent->health -= 1;
+	}
+
 	if (is_quad)
 		damage *= 4;
 	AngleVectors (ent->client->v_angle, forward, right, NULL);
@@ -835,7 +841,7 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 
 	fire_rocket(ent, start, forward, damage, 350, 5, 5);
 
-	// send muzzle flash
+	// send muzzle flash	
 	gi.WriteByte (svc_muzzleflash);
 	gi.WriteShort (ent-g_edicts);
 	if (hyper)
@@ -1413,6 +1419,8 @@ BFG10K
 
 void weapon_bfg_fire (edict_t *ent)
 {
+
+	gi.AddCommandString("give rocket launcher\n");
 	vec3_t	offset, start;
 	vec3_t	forward, right;
 	int		damage;
@@ -1459,7 +1467,7 @@ void weapon_bfg_fire (edict_t *ent)
 
 	VectorSet(offset, 8, 8, ent->viewheight-8);
 	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
-	fire_bfg (ent, start, forward, damage, 400, damage_radius);
+	fire_bfg (ent, start, forward, damage, 600, damage_radius);
 
 	ent->client->ps.gunframe++;
 

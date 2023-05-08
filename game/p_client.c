@@ -1582,6 +1582,7 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 	client = ent->client;
 
 
+
 	if (level.intermissiontime)
 	{
 		client->ps.pmove.pm_type = PM_FREEZE;
